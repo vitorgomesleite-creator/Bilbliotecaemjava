@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+
+```
+    <!-- Conexão com o banco H2 local -->
+    <property name="hibernate.connection.driver_class">org.h2.Driver</property>
+    <property name="hibernate.connection.url">jdbc:h2:./biblioteca.db;AUTO_SERVER=TRUE</property>
+    <property name="hibernate.connection.username">sa</property>
+    <property name="hibernate.connection.password"></property>
+
+    <!-- Dialeto H2 -->
+    <property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
+
+    <!-- Criação e atualização automática das tabelas -->
+    <!-- Valores possíveis:
+         create  -> cria do zero (perde dados)
+         update  -> atualiza esquema mantendo dados
+         validate-> valida sem alterar
+         none    -> nenhuma ação automática -->
+    <property name="hibernate.hbm2ddl.auto">update</property>
+
+    <!-- Mostrar SQL no console (útil para depuração) -->
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.format_sql">true</property>
+
+    <!-- Cache de sessão opcional para desenvolvimento -->
+    <property name="hibernate.current_session_context_class">thread</property>
+
+    <!-- Mapeamento das entidades do sistema -->
+    <mapping class="com.biblioteca.model.Book"/>
+    <mapping class="com.biblioteca.model.User"/>
+    <mapping class="com.biblioteca.model.Loan"/>
+
+</session-factory>
+```
+
+</hibernate-configuration>
