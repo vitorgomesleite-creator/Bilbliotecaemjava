@@ -30,6 +30,10 @@ public class MainFrame extends JFrame {
     private final DefaultTableModel loanTableModel = new DefaultTableModel(new String[]{"ID","Usuário","Livro","Empréstimo","Prev.Devol.","Devolução"},0) {
         @Override public boolean isCellEditable(int row, int col) { return false; }
     };
+    
+    // Referências para os combos de empréstimo
+    private JComboBox<User> cbUsers;
+    private JComboBox<Book> cbBooks;
 
     public MainFrame() {
         setTitle("Sistema de Gestão de Biblioteca - MVCR");
@@ -40,8 +44,16 @@ public class MainFrame extends JFrame {
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Livros", createBooksPanel());
         tabs.addTab("Usuários", createUsersPanel());
-        tabs.addTab("Empréstimos", createLoansPanel());
+        final JPanel loansPanel = createLoansPanel();
+        tabs.addTab("Empréstimos", loansPanel);
         tabs.addTab("Listagens / Atrasados", createListingPanel());
+        
+        // Atualizar combos quando mudar para aba de empréstimos
+        tabs.addChangeListener(e -> {
+            if (tabs.getSelectedIndex() == 2) { // Índice da aba Empréstimos
+                refreshAll();
+            }
+        });
 
         add(tabs);
         refreshAll();
@@ -266,14 +278,14 @@ public class MainFrame extends JFrame {
         JPanel south = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints(); c.insets = new Insets(4,4,4,4); c.anchor = GridBagConstraints.WEST;
 
-        final JComboBox<User> cbUsers = new JComboBox<>();
-        final JComboBox<Book> cbBooks = new JComboBox<>();
+        cbUsers = new JComboBox<>();
+        cbBooks = new JComboBox<>();
         final JFormattedTextField tfLoanDate[] = new JFormattedTextField[1];
         try { tfLoanDate[0] = new JFormattedTextField(new MaskFormatter("##/##/####")); tfLoanDate[0].setColumns(8); tfLoanDate[0].setText(LocalDate.now().format(formatter)); }
         catch (ParseException e) { tfLoanDate[0] = new JFormattedTextField(); tfLoanDate[0].setColumns(8); tfLoanDate[0].setText(LocalDate.now().format(formatter)); }
 
-        final JButton btnLoan = new JButton("Fazer Empréstimo");
-        final JButton btnReturn = new JButton("Registrar Devolução");
+        JButton btnLoan = new JButton("Fazer Empréstimo");
+        JButton btnReturn = new JButton("Registrar Devolução");
 
         c.gridx=0;c.gridy=0; south.add(new JLabel("Usuário:"),c);
         c.gridx=1; south.add(cbUsers,c);
@@ -399,5 +411,15 @@ public class MainFrame extends JFrame {
         refreshBooks();
         refreshUsers();
         refreshLoans();
+        updateLoansCombos();
+    }
+    
+    private void updateLoansCombos() {
+        if (cbUsers != null && cbBooks != null) {
+            cbUsers.removeAllItems();
+            for (User u : controller.listUsers()) cbUsers.addItem(u);
+            cbBooks.removeAllItems();
+            for (Book b : controller.listBooks()) cbBooks.addItem(b);
+        }
     }
 }

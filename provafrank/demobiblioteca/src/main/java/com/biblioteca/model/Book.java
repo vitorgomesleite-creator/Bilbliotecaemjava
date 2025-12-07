@@ -53,4 +53,7 @@ public class Book implements Serializable {
     }
     @Override
     public int hashCode() { return Objects.hash(getId()); }
+    
+    @Override
+    public String toString() { return getId() + " - " + title; }
 }
