@@ -1,0 +1,17 @@
+com\biblioteca\model\User.class
+com\biblioteca\repository\GenericRepository.class
+com\biblioteca\view\MainFrame$6.class
+com\biblioteca\view\MainFrame$2.class
+com\biblioteca\util\HibernateUtil.class
+com\biblioteca\repository\UserRepository.class
+com\biblioteca\view\MainFrame$3.class
+com\biblioteca\repository\LoanRepository.class
+com\biblioteca\view\MainFrame$4.class
+com\biblioteca\repository\BookRepository.class
+com\biblioteca\view\MainFrame.class
+com\biblioteca\model\Loan.class
+com\biblioteca\MainApp.class
+com\biblioteca\controller\LibraryController.class
+com\biblioteca\view\MainFrame$5.class
+com\biblioteca\model\Book.class
+com\biblioteca\view\MainFrame$1.class

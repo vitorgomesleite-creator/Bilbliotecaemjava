@@ -51,7 +51,7 @@ public class MainFrame extends JFrame {
         JPanel p = new JPanel(new BorderLayout(8,8));
         p.setBorder(new EmptyBorder(8,8,8,8));
 
-        JTable table = new JTable(bookTableModel);
+        final JTable table = new JTable(bookTableModel);
         JScrollPane sp = new JScrollPane(table);
         p.add(sp, BorderLayout.CENTER);
 
@@ -60,19 +60,19 @@ public class MainFrame extends JFrame {
         c.insets = new Insets(4,4,4,4);
         c.anchor = GridBagConstraints.WEST;
 
-        JTextField tfTitle = new JTextField(20);
-        JTextField tfTheme = new JTextField(15);
-        JTextField tfAuthor = new JTextField(15);
-        JTextField tfIsbn = new JTextField(12);
-        JFormattedTextField tfPubDate = null;
+        final JTextField tfTitle = new JTextField(20);
+        final JTextField tfTheme = new JTextField(15);
+        final JTextField tfAuthor = new JTextField(15);
+        final JTextField tfIsbn = new JTextField(12);
+        final JFormattedTextField tfPubDate[] = new JFormattedTextField[1];
         try {
-            tfPubDate = new JFormattedTextField(new MaskFormatter("##/##/####"));
-            tfPubDate.setColumns(8);
-        } catch (ParseException e) { tfPubDate = new JFormattedTextField(); tfPubDate.setColumns(8); }
-        JSpinner spQuantity = new JSpinner(new SpinnerNumberModel(1,0,1000,1));
+            tfPubDate[0] = new JFormattedTextField(new MaskFormatter("##/##/####"));
+            tfPubDate[0].setColumns(8);
+        } catch (ParseException e) { tfPubDate[0] = new JFormattedTextField(); tfPubDate[0].setColumns(8); }
+        final JSpinner spQuantity = new JSpinner(new SpinnerNumberModel(1,0,1000,1));
 
-        JButton btnAdd = new JButton("Salvar/Atualizar");
-        JButton btnDelete = new JButton("Excluir");
+        final JButton btnAdd = new JButton("Salvar/Atualizar");
+        final JButton btnDelete = new JButton("Excluir");
         JButton btnClear = new JButton("Limpar");
 
         c.gridx=0;c.gridy=0; form.add(new JLabel("Título:"),c);
@@ -84,7 +84,7 @@ public class MainFrame extends JFrame {
         c.gridx=0;c.gridy=3; form.add(new JLabel("ISBN:"),c);
         c.gridx=1; form.add(tfIsbn,c);
         c.gridx=0;c.gridy=4; form.add(new JLabel("Data Pub. (dd/MM/yyyy):"),c);
-        c.gridx=1; form.add(tfPubDate,c);
+        c.gridx=1; form.add(tfPubDate[0],c);
         c.gridx=0;c.gridy=5; form.add(new JLabel("Quantidade:"),c);
         c.gridx=1; form.add(spQuantity,c);
 
@@ -106,7 +106,7 @@ public class MainFrame extends JFrame {
                         tfTheme.setText(b.getTheme());
                         tfAuthor.setText(b.getAuthor());
                         tfIsbn.setText(b.getIsbn());
-                        tfPubDate.setText(b.getPublicationDate());
+                        tfPubDate[0].setText(b.getPublicationDate());
                         spQuantity.setValue(b.getQuantity());
                     }
                 }
@@ -119,7 +119,7 @@ public class MainFrame extends JFrame {
             String theme = tfTheme.getText().trim();
             String author = tfAuthor.getText().trim();
             String isbn = tfIsbn.getText().trim();
-            String pub = tfPubDate.getText().trim();
+            String pub = tfPubDate[0].getText().trim();
             int q = (Integer) spQuantity.getValue();
 
             // if row selected update existing, else create new
@@ -153,7 +153,7 @@ public class MainFrame extends JFrame {
 
         btnClear.addActionListener(ev -> {
             table.clearSelection();
-            tfTitle.setText(""); tfTheme.setText(""); tfAuthor.setText(""); tfIsbn.setText(""); tfPubDate.setText(""); spQuantity.setValue(1);
+            tfTitle.setText(""); tfTheme.setText(""); tfAuthor.setText(""); tfIsbn.setText(""); tfPubDate[0].setText(""); spQuantity.setValue(1);
         });
 
         return p;
@@ -168,12 +168,13 @@ public class MainFrame extends JFrame {
         JPanel form = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints(); c.insets = new Insets(4,4,4,4); c.anchor = GridBagConstraints.WEST;
 
-        JTextField tfName = new JTextField(18);
-        JComboBox<String> cbSex = new JComboBox<>(new String[]{"Masculino","Feminino","Outro"});
-        JFormattedTextField tfPhone = null;
-        try { tfPhone = new JFormattedTextField(new MaskFormatter("(##) #####-####")); tfPhone.setColumns(10); }
-        catch (ParseException e) { tfPhone = new JFormattedTextField(); tfPhone.setColumns(10); }
-        JTextField tfEmail = new JTextField(18);
+        final JTextField tfName = new JTextField(18);
+        final JComboBox<String> cbSex = new JComboBox<>(new String[]{"Masculino","Feminino","Outro"});
+        final JFormattedTextField tfPhone[];
+        tfPhone = new JFormattedTextField[1];
+        try { tfPhone[0] = new JFormattedTextField(new MaskFormatter("(##) #####-####")); tfPhone[0].setColumns(10); }
+        catch (ParseException e) { tfPhone[0] = new JFormattedTextField(); tfPhone[0].setColumns(10); }
+        final JTextField tfEmail = new JTextField(18);
         // Simple email verifier
         tfEmail.setInputVerifier(new InputVerifier() {
             @Override
@@ -183,16 +184,16 @@ public class MainFrame extends JFrame {
             }
         });
 
-        JButton btnSave = new JButton("Salvar/Atualizar");
-        JButton btnDel = new JButton("Excluir");
-        JButton btnClear = new JButton("Limpar");
+        final JButton btnSave = new JButton("Salvar/Atualizar");
+        final JButton btnDel = new JButton("Excluir");
+        final JButton btnClear = new JButton("Limpar");
 
         c.gridx=0;c.gridy=0; form.add(new JLabel("Nome:"),c);
         c.gridx=1; form.add(tfName,c);
         c.gridx=0;c.gridy=1; form.add(new JLabel("Sexo:"),c);
         c.gridx=1; form.add(cbSex,c);
         c.gridx=0;c.gridy=2; form.add(new JLabel("Celular:"),c);
-        c.gridx=1; form.add(tfPhone,c);
+        c.gridx=1; form.add(tfPhone[0],c);
         c.gridx=0;c.gridy=3; form.add(new JLabel("E-mail:"),c);
         c.gridx=1; form.add(tfEmail,c);
 
@@ -210,7 +211,7 @@ public class MainFrame extends JFrame {
                     User u = controller.findUser(id);
                     tfName.setText(u.getName());
                     cbSex.setSelectedItem(u.getSex());
-                    tfPhone.setText(u.getPhone());
+                    tfPhone[0].setText(u.getPhone());
                     tfEmail.setText(u.getEmail());
                 }
             }
@@ -220,7 +221,7 @@ public class MainFrame extends JFrame {
             String name = tfName.getText().trim();
             if (name.isEmpty()) { JOptionPane.showMessageDialog(this,"Nome obrigatório."); return; }
             String sex = (String) cbSex.getSelectedItem();
-            String phone = tfPhone.getText().trim();
+            String phone = tfPhone[0].getText().trim();
             String email = tfEmail.getText().trim();
             if (!email.contains("@") || !email.contains(".")) {
                 JOptionPane.showMessageDialog(this,"E-mail inválido."); return;
@@ -250,7 +251,7 @@ public class MainFrame extends JFrame {
 
         btnClear.addActionListener(ev -> {
             table.clearSelection();
-            tfName.setText(""); tfPhone.setText(""); tfEmail.setText("");
+            tfName.setText(""); tfPhone[0].setText(""); tfEmail.setText("");
         });
 
         return p;
@@ -259,51 +260,52 @@ public class MainFrame extends JFrame {
     private JPanel createLoansPanel() {
         JPanel p = new JPanel(new BorderLayout(8,8)); p.setBorder(new EmptyBorder(8,8,8,8));
 
-        JTable table = new JTable(loanTableModel);
+        final JTable table = new JTable(loanTableModel);
         p.add(new JScrollPane(table), BorderLayout.CENTER);
 
         JPanel south = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints(); c.insets = new Insets(4,4,4,4); c.anchor = GridBagConstraints.WEST;
 
-        JComboBox<User> cbUsers = new JComboBox<>();
-        JComboBox<Book> cbBooks = new JComboBox<>();
-        JFormattedTextField tfLoanDate = null;
-        try { tfLoanDate = new JFormattedTextField(new MaskFormatter("##/##/####")); tfLoanDate.setColumns(8); tfLoanDate.setText(LocalDate.now().format(formatter)); }
-        catch (ParseException e) { tfLoanDate = new JFormattedTextField(); tfLoanDate.setColumns(8); tfLoanDate.setText(LocalDate.now().format(formatter)); }
+        final JComboBox<User> cbUsers = new JComboBox<>();
+        final JComboBox<Book> cbBooks = new JComboBox<>();
+        final JFormattedTextField tfLoanDate[] = new JFormattedTextField[1];
+        try { tfLoanDate[0] = new JFormattedTextField(new MaskFormatter("##/##/####")); tfLoanDate[0].setColumns(8); tfLoanDate[0].setText(LocalDate.now().format(formatter)); }
+        catch (ParseException e) { tfLoanDate[0] = new JFormattedTextField(); tfLoanDate[0].setColumns(8); tfLoanDate[0].setText(LocalDate.now().format(formatter)); }
 
-        JButton btnLoan = new JButton("Fazer Empréstimo");
-        JButton btnReturn = new JButton("Registrar Devolução");
+        final JButton btnLoan = new JButton("Fazer Empréstimo");
+        final JButton btnReturn = new JButton("Registrar Devolução");
 
         c.gridx=0;c.gridy=0; south.add(new JLabel("Usuário:"),c);
         c.gridx=1; south.add(cbUsers,c);
         c.gridx=0;c.gridy=1; south.add(new JLabel("Livro:"),c);
         c.gridx=1; south.add(cbBooks,c);
         c.gridx=0;c.gridy=2; south.add(new JLabel("Data Empréstimo:"),c);
-        c.gridx=1; south.add(tfLoanDate,c);
+        c.gridx=1; south.add(tfLoanDate[0],c);
         c.gridx=0;c.gridy=3; south.add(btnLoan,c);
         c.gridx=1; south.add(btnReturn,c);
 
         p.add(south, BorderLayout.SOUTH);
 
         // popula combos
-        Runnable repopulateCombos = () -> {
+        final Runnable[] repopulateCombos = new Runnable[1];
+        repopulateCombos[0] = () -> {
             cbUsers.removeAllItems();
             for (User u : controller.listUsers()) cbUsers.addItem(u);
             cbBooks.removeAllItems();
             for (Book b : controller.listBooks()) cbBooks.addItem(b);
         };
-        repopulateCombos.run();
+        repopulateCombos[0].run();
 
         btnLoan.addActionListener(ev -> {
             User u = (User) cbUsers.getSelectedItem();
             Book b = (Book) cbBooks.getSelectedItem();
             if (u==null || b==null) { JOptionPane.showMessageDialog(this,"Selecione usuário e livro."); return; }
             try {
-                LocalDate loanDate = LocalDate.parse(tfLoanDate.getText(), formatter);
+                LocalDate loanDate = LocalDate.parse(tfLoanDate[0].getText(), formatter);
                 String res = controller.loanBook(u,b,loanDate);
                 JOptionPane.showMessageDialog(this,res);
                 refreshAll();
-                repopulateCombos.run();
+                repopulateCombos[0].run();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,"Data inválida. Use dd/MM/yyyy");
             }
@@ -321,7 +323,7 @@ public class MainFrame extends JFrame {
                 String res = controller.returnBook(loan, ret);
                 JOptionPane.showMessageDialog(this, res);
                 refreshAll();
-                repopulateCombos.run();
+                repopulateCombos[0].run();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,"Data inválida.");
             }
