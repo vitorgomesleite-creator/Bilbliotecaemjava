@@ -49,10 +49,21 @@ public class LibraryController {
         if (user == null || book == null) return "Usuário ou livro não encontrado no banco.";
         
         List<Loan> open = loanRepo.findOpenLoansByUser(user);
-        System.out.println("DEBUG: User " + user.getId() + " tem " + open.size() + " empréstimos abertos. MAX=" + MAX_LOANS_PER_USER);
         
-        if (open.size() >= MAX_LOANS_PER_USER) {
-            return "Usuário já possui " + open.size() + " empréstimos (máx " + MAX_LOANS_PER_USER + ").";
+        // Contar quantidade TOTAL de livros abertos
+        int totalLivrosAbertos = 0;
+        for (Loan l : open) {
+            totalLivrosAbertos += l.getQuantity();
+        }
+        
+        System.out.println("DEBUG: User " + user.getId() + " tem " + totalLivrosAbertos + " livros emprestados. MAX=" + MAX_LOANS_PER_USER);
+        
+        if (totalLivrosAbertos >= MAX_LOANS_PER_USER) {
+            return "Usuário já possui " + totalLivrosAbertos + " livros emprestados (máx " + MAX_LOANS_PER_USER + "). Não pode emprestar mais " + quantity + ".";
+        }
+        if (totalLivrosAbertos + quantity > MAX_LOANS_PER_USER) {
+            int restante = MAX_LOANS_PER_USER - totalLivrosAbertos;
+            return "Você pode emprestar no máximo " + restante + " livros. Tentou: " + quantity + ".";
         }
         if (book.getQuantity() < quantity) return "Apenas " + book.getQuantity() + " exemplares disponíveis (tentou: " + quantity + ").";
 
@@ -75,9 +86,9 @@ public class LibraryController {
         loan.setReturnDate(returnDate);
         loanRepo.save(loan);
 
-        // aumentar quantidade
+        // aumentar quantidade de acordo com a quantidade emprestada
         Book book = loan.getBook();
-        book.setQuantity(book.getQuantity() + 1);
+        book.setQuantity(book.getQuantity() + loan.getQuantity());
         bookRepo.save(book);
 
         // calcular multa se atrasado
