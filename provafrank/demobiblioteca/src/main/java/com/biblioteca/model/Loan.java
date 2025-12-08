@@ -20,10 +20,14 @@ public class Loan implements Serializable {
     private LocalDate loanDate;
     private LocalDate expectedReturnDate;
     private LocalDate returnDate; // null se não devolvido
+    private int quantity = 1; // quantidade de exemplares emprestados
 
     public Loan() {}
     public Loan(User user, Book book, LocalDate loanDate, LocalDate expectedReturnDate) {
-        this.user = user; this.book = book; this.loanDate = loanDate; this.expectedReturnDate = expectedReturnDate;
+        this.user = user; this.book = book; this.loanDate = loanDate; this.expectedReturnDate = expectedReturnDate; this.quantity = 1;
+    }
+    public Loan(User user, Book book, LocalDate loanDate, LocalDate expectedReturnDate, int quantity) {
+        this.user = user; this.book = book; this.loanDate = loanDate; this.expectedReturnDate = expectedReturnDate; this.quantity = quantity;
     }
 
     // getters e setters
@@ -39,6 +43,8 @@ public class Loan implements Serializable {
     public void setExpectedReturnDate(LocalDate expectedReturnDate) { this.expectedReturnDate = expectedReturnDate; }
     public LocalDate getReturnDate() { return returnDate; }
     public void setReturnDate(LocalDate returnDate) { this.returnDate = returnDate; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
 
     public boolean isReturned() { return returnDate != null; }
 

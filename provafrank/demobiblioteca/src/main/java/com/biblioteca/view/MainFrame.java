@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
     private final DefaultTableModel userTableModel = new DefaultTableModel(new String[]{"ID","Nome","Sexo","Celular","Email"},0) {
         @Override public boolean isCellEditable(int row, int col) { return false; }
     };
-    private final DefaultTableModel loanTableModel = new DefaultTableModel(new String[]{"ID","Usuário","Livro","Empréstimo","Prev.Devol.","Devolução","Dias Rest./Atraso","Multa Acumulada"},0) {
+    private final DefaultTableModel loanTableModel = new DefaultTableModel(new String[]{"ID","Usuário","Livro","Qtd.","Empréstimo","Prev.Devol.","Devolução","Dias Rest./Atraso","Multa Acumulada"},0) {
         @Override public boolean isCellEditable(int row, int col) { return false; }
     };
     
@@ -455,6 +455,7 @@ public class MainFrame extends JFrame {
                     l.getId(),
                     l.getUser().getName(),
                     l.getBook().getTitle(),
+                    l.getQuantity(),
                     l.getLoanDate() != null ? l.getLoanDate().format(formatter) : "",
                     l.getExpectedReturnDate() != null ? l.getExpectedReturnDate().format(formatter) : "",
                     l.getReturnDate() != null ? l.getReturnDate().format(formatter) : "",

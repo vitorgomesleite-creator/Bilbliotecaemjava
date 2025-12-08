@@ -58,11 +58,9 @@ public class LibraryController {
 
         LocalDate expected = loanDate.plusDays(MAX_LOAN_DAYS);
         
-        // Criar um empréstimo para cada livro da quantidade solicitada
-        for (int i = 0; i < quantity; i++) {
-            Loan loan = new Loan(user, book, loanDate, expected);
-            loanRepo.save(loan);
-        }
+        // Criar UM empréstimo com a quantidade
+        Loan loan = new Loan(user, book, loanDate, expected, quantity);
+        loanRepo.save(loan);
 
         // decrementar quantidade total
         book.setQuantity(book.getQuantity() - quantity);
