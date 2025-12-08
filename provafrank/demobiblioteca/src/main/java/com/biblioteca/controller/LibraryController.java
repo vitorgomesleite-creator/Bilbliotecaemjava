@@ -26,6 +26,7 @@ public class LibraryController {
     public void saveBook(Book b) { bookRepo.save(b); }
     public void deleteBook(Book b) { bookRepo.delete(b); }
     public List<Book> listBooks() { return bookRepo.findAll(); }
+    public List<Book> listAvailableBooks() { return bookRepo.findAvailable(); }
     public Book findBook(Long id) { return bookRepo.findById(id); }
 
     // User CRUD

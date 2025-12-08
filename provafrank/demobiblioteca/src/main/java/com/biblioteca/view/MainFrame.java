@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
     private final DefaultTableModel userTableModel = new DefaultTableModel(new String[]{"ID","Nome","Sexo","Celular","Email"},0) {
         @Override public boolean isCellEditable(int row, int col) { return false; }
     };
-    private final DefaultTableModel loanTableModel = new DefaultTableModel(new String[]{"ID","Usuário","Livro","Empréstimo","Prev.Devol.","Devolução"},0) {
+    private final DefaultTableModel loanTableModel = new DefaultTableModel(new String[]{"ID","Usuário","Livro","Empréstimo","Prev.Devol.","Devolução","Dias Rest./Atraso","Multa Acumulada"},0) {
         @Override public boolean isCellEditable(int row, int col) { return false; }
     };
     
@@ -330,6 +330,11 @@ public class MainFrame extends JFrame {
                 JOptionPane.showMessageDialog(this,res);
                 refreshAll();
                 repopulateCombos[0].run();
+                // Atualizar label de quantidade após empréstimo
+                Book bAtualizado = (Book) cbBooks.getSelectedItem();
+                if (bAtualizado != null) {
+                    lblQuantidade.setText("Quantidade: " + bAtualizado.getQuantity());
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,"Data inválida. Use dd/MM/yyyy");
             }
@@ -348,6 +353,11 @@ public class MainFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, res);
                 refreshAll();
                 repopulateCombos[0].run();
+                // Atualizar label de quantidade após devolução
+                Book bAtualizado = (Book) cbBooks.getSelectedItem();
+                if (bAtualizado != null) {
+                    lblQuantidade.setText("Quantidade: " + bAtualizado.getQuantity());
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,"Data inválida.");
             }
@@ -408,14 +418,38 @@ public class MainFrame extends JFrame {
     }
     private void refreshLoans() {
         loanTableModel.setRowCount(0);
+        LocalDate today = LocalDate.now();
         for (Loan l : controller.listLoans()) {
+            // Calcular dias restantes ou atrasado
+            String diasInfo = "";
+            String multaInfo = "";
+            
+            if (l.getReturnDate() != null) {
+                // Já foi devolvido
+                diasInfo = "DEVOLVIDO";
+                multaInfo = "-";
+            } else {
+                // Ainda não foi devolvido
+                long days = java.time.temporal.ChronoUnit.DAYS.between(today, l.getExpectedReturnDate());
+                if (days >= 0) {
+                    diasInfo = days + " dias";
+                    multaInfo = "R$ 0,00";
+                } else {
+                    diasInfo = Math.abs(days) + " dias ATRASADO";
+                    double fine = Math.abs(days) * 1.5;
+                    multaInfo = "R$ " + String.format("%.2f", fine);
+                }
+            }
+            
             loanTableModel.addRow(new Object[]{
                     l.getId(),
                     l.getUser().getName(),
                     l.getBook().getTitle(),
                     l.getLoanDate() != null ? l.getLoanDate().format(formatter) : "",
                     l.getExpectedReturnDate() != null ? l.getExpectedReturnDate().format(formatter) : "",
-                    l.getReturnDate() != null ? l.getReturnDate().format(formatter) : ""
+                    l.getReturnDate() != null ? l.getReturnDate().format(formatter) : "",
+                    diasInfo,
+                    multaInfo
             });
         }
     }
