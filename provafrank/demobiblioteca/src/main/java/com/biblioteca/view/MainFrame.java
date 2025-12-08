@@ -280,7 +280,8 @@ public class MainFrame extends JFrame {
 
         cbUsers = new JComboBox<>();
         cbBooks = new JComboBox<>();
-        final JLabel lblQuantidade = new JLabel("Quantidade: 0");
+        final JLabel lblQuantidade = new JLabel("Quantidade Disponível: 0");
+        final JSpinner spQuantidadeEmprestar = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
         final JFormattedTextField tfLoanDate[] = new JFormattedTextField[1];
         try { tfLoanDate[0] = new JFormattedTextField(new MaskFormatter("##/##/####")); tfLoanDate[0].setColumns(8); tfLoanDate[0].setText(LocalDate.now().format(formatter)); }
         catch (ParseException e) { tfLoanDate[0] = new JFormattedTextField(); tfLoanDate[0].setColumns(8); tfLoanDate[0].setText(LocalDate.now().format(formatter)); }
@@ -294,9 +295,11 @@ public class MainFrame extends JFrame {
         c.gridx=1; south.add(cbBooks,c);
         c.gridx=0;c.gridy=2; south.add(new JLabel("Quantidade Disponível:"),c);
         c.gridx=1; south.add(lblQuantidade,c);
-        c.gridx=0;c.gridy=3; south.add(new JLabel("Data Empréstimo:"),c);
+        c.gridx=0;c.gridy=3; south.add(new JLabel("Qtd. a Emprestar:"),c);
+        c.gridx=1; south.add(spQuantidadeEmprestar,c);
+        c.gridx=0;c.gridy=4; south.add(new JLabel("Data Empréstimo:"),c);
         c.gridx=1; south.add(tfLoanDate[0],c);
-        c.gridx=0;c.gridy=4; south.add(btnLoan,c);
+        c.gridx=0;c.gridy=5; south.add(btnLoan,c);
         c.gridx=1; south.add(btnReturn,c);
 
         p.add(south, BorderLayout.SOUTH);
@@ -314,9 +317,13 @@ public class MainFrame extends JFrame {
         cbBooks.addActionListener(ev -> {
             Book b = (Book) cbBooks.getSelectedItem();
             if (b != null) {
-                lblQuantidade.setText("Quantidade: " + b.getQuantity());
+                int qtdDisponivel = b.getQuantity();
+                lblQuantidade.setText("Quantidade Disponível: " + qtdDisponivel);
+                // Ajustar o máximo do spinner baseado na quantidade disponível
+                spQuantidadeEmprestar.setModel(new SpinnerNumberModel(1, 1, Math.max(1, qtdDisponivel), 1));
             } else {
-                lblQuantidade.setText("Quantidade: 0");
+                lblQuantidade.setText("Quantidade Disponível: 0");
+                spQuantidadeEmprestar.setModel(new SpinnerNumberModel(1, 1, 1, 1));
             }
         });
 
@@ -324,16 +331,18 @@ public class MainFrame extends JFrame {
             User u = (User) cbUsers.getSelectedItem();
             Book b = (Book) cbBooks.getSelectedItem();
             if (u==null || b==null) { JOptionPane.showMessageDialog(this,"Selecione usuário e livro."); return; }
+            int qtdEmprestar = (Integer) spQuantidadeEmprestar.getValue();
             try {
                 LocalDate loanDate = LocalDate.parse(tfLoanDate[0].getText(), formatter);
-                String res = controller.loanBook(u,b,loanDate);
+                String res = controller.loanBook(u, b, loanDate, qtdEmprestar);
                 JOptionPane.showMessageDialog(this,res);
                 refreshAll();
                 repopulateCombos[0].run();
                 // Atualizar label de quantidade após empréstimo
                 Book bAtualizado = (Book) cbBooks.getSelectedItem();
                 if (bAtualizado != null) {
-                    lblQuantidade.setText("Quantidade: " + bAtualizado.getQuantity());
+                    lblQuantidade.setText("Quantidade Disponível: " + bAtualizado.getQuantity());
+                    spQuantidadeEmprestar.setModel(new SpinnerNumberModel(1, 1, Math.max(1, bAtualizado.getQuantity()), 1));
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,"Data inválida. Use dd/MM/yyyy");
@@ -356,7 +365,8 @@ public class MainFrame extends JFrame {
                 // Atualizar label de quantidade após devolução
                 Book bAtualizado = (Book) cbBooks.getSelectedItem();
                 if (bAtualizado != null) {
-                    lblQuantidade.setText("Quantidade: " + bAtualizado.getQuantity());
+                    lblQuantidade.setText("Quantidade Disponível: " + bAtualizado.getQuantity());
+                    spQuantidadeEmprestar.setModel(new SpinnerNumberModel(1, 1, Math.max(1, bAtualizado.getQuantity()), 1));
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,"Data inválida.");

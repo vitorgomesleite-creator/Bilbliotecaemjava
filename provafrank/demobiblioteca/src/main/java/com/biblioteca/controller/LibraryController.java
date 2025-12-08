@@ -39,8 +39,9 @@ public class LibraryController {
     public List<Loan> listLoans() { return loanRepo.findAll(); }
     public List<Loan> listOpenLoansByUser(User u) { return loanRepo.findOpenLoansByUser(u); }
 
-    public String loanBook(User user, Book book, LocalDate loanDate) {
+    public String loanBook(User user, Book book, LocalDate loanDate, int quantity) {
         if (user == null || book == null) return "Usuário ou livro inválido.";
+        if (quantity <= 0) return "Quantidade deve ser maior que 0.";
         
         // Recarregar do banco para evitar detached entity
         user = userRepo.findById(user.getId());
@@ -53,16 +54,20 @@ public class LibraryController {
         if (open.size() >= MAX_LOANS_PER_USER) {
             return "Usuário já possui " + open.size() + " empréstimos (máx " + MAX_LOANS_PER_USER + ").";
         }
-        if (book.getQuantity() <= 0) return "Não há exemplares disponíveis deste livro.";
+        if (book.getQuantity() < quantity) return "Apenas " + book.getQuantity() + " exemplares disponíveis (tentou: " + quantity + ").";
 
         LocalDate expected = loanDate.plusDays(MAX_LOAN_DAYS);
-        Loan loan = new Loan(user, book, loanDate, expected);
-        loanRepo.save(loan);
+        
+        // Criar um empréstimo para cada livro da quantidade solicitada
+        for (int i = 0; i < quantity; i++) {
+            Loan loan = new Loan(user, book, loanDate, expected);
+            loanRepo.save(loan);
+        }
 
-        // decrementar quantidade
-        book.setQuantity(book.getQuantity() - 1);
+        // decrementar quantidade total
+        book.setQuantity(book.getQuantity() - quantity);
         bookRepo.save(book);
-        return "Empréstimo registrado. Devolução prevista: " + expected.format(formatter);
+        return "Empréstimo registrado: " + quantity + " exemplar(es). Devolução prevista: " + expected.format(formatter);
     }
 
     public String returnBook(Loan loan, LocalDate returnDate) {
