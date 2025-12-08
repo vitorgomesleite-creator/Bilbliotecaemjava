@@ -280,6 +280,7 @@ public class MainFrame extends JFrame {
 
         cbUsers = new JComboBox<>();
         cbBooks = new JComboBox<>();
+        final JLabel lblQuantidade = new JLabel("Quantidade: 0");
         final JFormattedTextField tfLoanDate[] = new JFormattedTextField[1];
         try { tfLoanDate[0] = new JFormattedTextField(new MaskFormatter("##/##/####")); tfLoanDate[0].setColumns(8); tfLoanDate[0].setText(LocalDate.now().format(formatter)); }
         catch (ParseException e) { tfLoanDate[0] = new JFormattedTextField(); tfLoanDate[0].setColumns(8); tfLoanDate[0].setText(LocalDate.now().format(formatter)); }
@@ -291,9 +292,11 @@ public class MainFrame extends JFrame {
         c.gridx=1; south.add(cbUsers,c);
         c.gridx=0;c.gridy=1; south.add(new JLabel("Livro:"),c);
         c.gridx=1; south.add(cbBooks,c);
-        c.gridx=0;c.gridy=2; south.add(new JLabel("Data Empréstimo:"),c);
+        c.gridx=0;c.gridy=2; south.add(new JLabel("Quantidade Disponível:"),c);
+        c.gridx=1; south.add(lblQuantidade,c);
+        c.gridx=0;c.gridy=3; south.add(new JLabel("Data Empréstimo:"),c);
         c.gridx=1; south.add(tfLoanDate[0],c);
-        c.gridx=0;c.gridy=3; south.add(btnLoan,c);
+        c.gridx=0;c.gridy=4; south.add(btnLoan,c);
         c.gridx=1; south.add(btnReturn,c);
 
         p.add(south, BorderLayout.SOUTH);
@@ -307,6 +310,15 @@ public class MainFrame extends JFrame {
             for (Book b : controller.listBooks()) cbBooks.addItem(b);
         };
         repopulateCombos[0].run();
+
+        cbBooks.addActionListener(ev -> {
+            Book b = (Book) cbBooks.getSelectedItem();
+            if (b != null) {
+                lblQuantidade.setText("Quantidade: " + b.getQuantity());
+            } else {
+                lblQuantidade.setText("Quantidade: 0");
+            }
+        });
 
         btnLoan.addActionListener(ev -> {
             User u = (User) cbUsers.getSelectedItem();

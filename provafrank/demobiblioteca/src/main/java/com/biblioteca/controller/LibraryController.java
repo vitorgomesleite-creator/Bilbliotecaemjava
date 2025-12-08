@@ -40,8 +40,18 @@ public class LibraryController {
 
     public String loanBook(User user, Book book, LocalDate loanDate) {
         if (user == null || book == null) return "Usuário ou livro inválido.";
+        
+        // Recarregar do banco para evitar detached entity
+        user = userRepo.findById(user.getId());
+        book = bookRepo.findById(book.getId());
+        if (user == null || book == null) return "Usuário ou livro não encontrado no banco.";
+        
         List<Loan> open = loanRepo.findOpenLoansByUser(user);
-        if (open.size() >= MAX_LOANS_PER_USER) return "Usuário já possui " + open.size() + " empréstimos (máx " + MAX_LOANS_PER_USER + ").";
+        System.out.println("DEBUG: User " + user.getId() + " tem " + open.size() + " empréstimos abertos. MAX=" + MAX_LOANS_PER_USER);
+        
+        if (open.size() >= MAX_LOANS_PER_USER) {
+            return "Usuário já possui " + open.size() + " empréstimos (máx " + MAX_LOANS_PER_USER + ").";
+        }
         if (book.getQuantity() <= 0) return "Não há exemplares disponíveis deste livro.";
 
         LocalDate expected = loanDate.plusDays(MAX_LOAN_DAYS);
